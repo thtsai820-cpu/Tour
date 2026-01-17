@@ -3,11 +3,210 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tour 測試頁</title>
+  <title>台灣好行金門 A線｜集章任務（試玩版）</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Noto Sans TC",Segoe UI,Roboto,Arial}
+    body{margin:0;background:#0b0c10;color:#f5f5f5}
+    .wrap{max-width:720px;margin:0 auto;padding:18px}
+    .card{background:#141622;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    h1{font-size:22px;margin:6px 0 0}
+    .sub{opacity:.85;font-size:13px;line-height:1.6;margin-top:8px}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.03);font-size:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{appearance:none;border:1px solid rgba(255,255,255,.12);background:#1d2140;color:#fff;border-radius:14px;padding:10px 12px;font-weight:800;cursor:pointer}
+    .btn.secondary{background:#141622}
+    .btn.good{background:#1f3d2c}
+    input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:#0f1120;color:#fff;font-size:16px}
+    .progress{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar{height:100%;background:#7aa2ff;width:0%}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .stamp{border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:10px;background:rgba(255,255,255,.03)}
+    .stamp.done{border-style:solid;background:rgba(122,162,255,.12)}
+    .tiny{font-size:12px;opacity:.85;line-height:1.6}
+    @media (max-width:520px){.grid2{grid-template-columns:1fr}}
+  </style>
 </head>
-<body style="font-family:system-ui;padding:24px">
-  <h1>✅ GitHub Pages 正常渲染中</h1>
-  <p>如果你看到這段是「排版後的網頁」，代表 Pages 沒問題；問題在原本那份 A 線 HTML 被包成程式碼顯示。</p>
-  <button style="font-size:18px;padding:12px 16px">我看得到按鈕</button>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="pill">🚌 台灣好行金門｜A線試玩</div>
+      <h1>好行金門：A線集章任務</h1>
+      <div class="sub">
+        玩法：<b>到站掃 QR（這裡先用輸入碼代替）→ 答題 → 集章</b><br/>
+        你完成 3 枚章，就會看到「完成徽章」畫面（用來做行銷導流/到店兌換）。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="pill">📍 目前路線：A線</div>
+          <div class="sub">水頭—翟山（示意版）：把「搭公車」變成闖關旅行。</div>
+        </div>
+        <button class="btn secondary" id="resetBtn">重置進度</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="row" style="justify-content:space-between">
+          <div class="tiny">集章進度</div>
+          <div class="tiny" id="progressText">0/3</div>
+        </div>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+      </div>
+
+      <div class="grid2" style="margin-top:12px">
+        <div class="card" style="margin:0">
+          <h3 style="margin:0 0 8px;font-size:14px">① 輸入站點碼（模擬掃 QR）</h3>
+          <input id="codeInput" placeholder="例如 A-01、A-02、A-03" />
+          <div class="row" style="margin-top:10px">
+            <button class="btn" id="redeemBtn">開始任務</button>
+            <button class="btn secondary" id="demoBtn">我想試玩（自動給碼）</button>
+          </div>
+          <div class="tiny" style="margin-top:10px">
+            之後你只要做 QR code 指向：<span style="opacity:.9">.../index.html?code=A-01</span>，掃描就會自動帶入。
+          </div>
+        </div>
+
+        <div class="card" style="margin:0">
+          <h3 style="margin:0 0 8px;font-size:14px">② 任務（答對才給章）</h3>
+          <div id="missionBox" class="tiny" style="opacity:.8">請先輸入站點碼。</div>
+          <div id="missionActions" class="row" style="margin-top:10px;display:none"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3 style="margin:0 0 10px;font-size:14px">你的 A線數位章</h3>
+        <div class="grid2" id="stamps"></div>
+        <div class="tiny" style="margin-top:10px">
+          ✅ 現在先做 3 站示範：A-01 / A-02 / A-03（你之後給我 A 線真實站點，我再幫你換成正式版）
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="finish" style="display:none">
+      <div class="pill">🎉 完成 A線徽章</div>
+      <h2 style="margin:8px 0 6px;font-size:18px">你解鎖了「A線好行徽章」！</h2>
+      <div class="sub" id="rewardText"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn good" id="shareBtn">一鍵分享</button>
+      </div>
+      <div class="tiny" style="margin-top:10px" id="couponHint"></div>
+    </div>
+  </div>
+
+<script>
+const key="km_a_line_game_v1";
+const state=JSON.parse(localStorage.getItem(key)||"{}");
+
+const STAMPS=["A-01","A-02","A-03"];
+const QUESTIONS=[
+  {q:"台灣好行A線行銷遊戲最希望旅客做什麼？", a:["只看不動","搭車到站互動集章","直接回飯店"], correct:1},
+  {q:"掃描站點QR最適合用來？", a:["增加排隊","引導到景點/店家並完成任務","讓旅客迷路"], correct:1},
+  {q:"完成集章後最適合做什麼？", a:["分享打卡導流","立刻刪除","什麼都不做"], correct:0},
+];
+
+function save(){localStorage.setItem(key,JSON.stringify(state));}
+function $(s){return document.querySelector(s);}
+
+function render(){
+  state.stamps ||= [];
+  const got=state.stamps.length;
+  $("#progressText").textContent=`${got}/${STAMPS.length}`;
+  $("#bar").style.width=`${Math.min(100,(got/STAMPS.length)*100)}%`;
+
+  const stampsEl=$("#stamps");
+  stampsEl.innerHTML="";
+  STAMPS.forEach(code=>{
+    const done=state.stamps.includes(code);
+    const d=document.createElement("div");
+    d.className="stamp"+(done?" done":"");
+    d.innerHTML=`<div style="font-weight:900">${done?"✅ 已集章":"⬜ 未集章"}</div>
+                 <div class="tiny" style="opacity:.8">站點碼：${code}</div>`;
+    stampsEl.appendChild(d);
+  });
+
+  if(got>=STAMPS.length){
+    $("#finish").style.display="";
+    const device=(state.deviceId ||= Math.random().toString(16).slice(2,10)).toUpperCase();
+    const coupon=`KM-A-${device}`;
+    $("#rewardText").textContent="可引導玩家到合作店家出示此畫面換小禮/折扣（正式版可做核銷）。";
+    $("#couponHint").textContent=`示範兌換碼：${coupon}`;
+    save();
+  }else{
+    $("#finish").style.display="none";
+  }
+}
+
+function showMission(code){
+  const t=(code||"").trim().toUpperCase();
+  const box=$("#missionBox");
+  const act=$("#missionActions");
+  act.style.display="none";
+
+  if(!/^A-\d{2}$/.test(t)){
+    box.style.opacity=.85;
+    box.textContent="碼格式不正確，請輸入 A-01、A-02、A-03。";
+    return;
+  }
+  if(!STAMPS.includes(t)){
+    box.style.opacity=.85;
+    box.textContent="目前試玩版只開放 A-01~A-03。";
+    return;
+  }
+  if(state.stamps.includes(t)){
+    box.style.opacity=.85;
+    box.textContent=`${t} 已經拿過章了！換下一站～`;
+    return;
+  }
+
+  const q=QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
+  box.style.opacity=1;
+  box.innerHTML=`<div style="font-weight:900;margin-bottom:8px">任務：答對才給章（${t}）</div>
+                 <div style="margin-bottom:10px">${q.q}</div>`;
+  act.innerHTML="";
+  q.a.forEach((opt,idx)=>{
+    const b=document.createElement("button");
+    b.className="btn secondary";
+    b.textContent=`${idx+1}. ${opt}`;
+    b.onclick=()=>{
+      if(idx===q.correct){
+        state.stamps.push(t); save();
+        box.innerHTML=`✅ 恭喜答對！你獲得數位章：<b>${t}</b>`;
+        act.style.display="none";
+        render();
+      }else{
+        box.innerHTML="再試一次～提示：答案跟「互動集章/導流」有關。";
+      }
+    };
+    act.appendChild(b);
+  });
+  act.style.display="flex";
+}
+
+$("#redeemBtn").onclick=()=>showMission($("#codeInput").value);
+$("#demoBtn").onclick=()=>{
+  state.stamps ||= [];
+  const next=STAMPS.find(x=>!state.stamps.includes(x)) || STAMPS[0];
+  $("#codeInput").value=next;
+  showMission(next);
+};
+$("#resetBtn").onclick=()=>{localStorage.removeItem(key); location.href=location.pathname;};
+
+$("#shareBtn").onclick=async ()=>{
+  const text="我剛完成台灣好行金門 A線 集章任務！🚌✨ #台灣好行 #金門";
+  try{
+    if(navigator.share){ await navigator.share({title:"台灣好行金門 A線", text}); }
+    else{ await navigator.clipboard.writeText(text); alert("已複製分享文案到剪貼簿！"); }
+  }catch(e){ alert("分享取消或不可用。"); }
+};
+
+// 支援 ?code=A-01
+(function boot(){
+  const url=new URL(location.href);
+  const code=url.searchParams.get("code");
+  if(code){ $("#codeInput").value=code.toUpperCase().trim(); showMission(code); }
+  render();
+})();
+</script>
 </body>
 </html>
