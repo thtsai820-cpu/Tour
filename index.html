@@ -3,209 +3,297 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>台灣好行金門 A線｜集章任務（試玩版）</title>
+  <title>台灣好行金門 A線｜水頭翟山集章任務</title>
+  <meta name="theme-color" content="#0b0c10" />
   <style>
     :root{font-family:system-ui,-apple-system,"Noto Sans TC",Segoe UI,Roboto,Arial}
     body{margin:0;background:#0b0c10;color:#f5f5f5}
-    .wrap{max-width:720px;margin:0 auto;padding:18px}
-    .card{background:#141622;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-    h1{font-size:22px;margin:6px 0 0}
-    .sub{opacity:.85;font-size:13px;line-height:1.6;margin-top:8px}
-    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.03);font-size:12px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    a{color:inherit}
+    .wrap{max-width:820px;margin:0 auto;padding:18px}
+    .card{background:#141622;border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:14px;margin:12px 0;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.03);font-size:12px;opacity:.95}
+    h1{font-size:22px;margin:8px 0 0}
+    h2{font-size:16px;margin:0}
+    .sub{opacity:.85;font-size:13px;line-height:1.65;margin-top:8px}
     .btn{appearance:none;border:1px solid rgba(255,255,255,.12);background:#1d2140;color:#fff;border-radius:14px;padding:10px 12px;font-weight:800;cursor:pointer}
     .btn.secondary{background:#141622}
     .btn.good{background:#1f3d2c}
-    input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:#0f1120;color:#fff;font-size:16px}
+    .btn.warn{background:#40211d}
     .progress{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
     .bar{height:100%;background:#7aa2ff;width:0%}
+    input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:#0f1120;color:#fff;font-size:16px}
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .stamp{border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:10px;background:rgba(255,255,255,.03)}
-    .stamp.done{border-style:solid;background:rgba(122,162,255,.12)}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
     .tiny{font-size:12px;opacity:.85;line-height:1.6}
-    @media (max-width:520px){.grid2{grid-template-columns:1fr}}
+    .muted{opacity:.75}
+    .stop{border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:12px;background:rgba(255,255,255,.03)}
+    .stop.done{background:rgba(122,162,255,.12);border-color:rgba(122,162,255,.35)}
+    .tag{display:inline-block;margin-right:6px;margin-top:6px;border:1px solid rgba(255,255,255,.12);padding:4px 8px;border-radius:999px;font-size:12px;opacity:.9}
+    @media (max-width:700px){.grid2,.grid3{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <div class="pill">🚌 台灣好行金門｜A線試玩</div>
-      <h1>好行金門：A線集章任務</h1>
-      <div class="sub">
-        玩法：<b>到站掃 QR（這裡先用輸入碼代替）→ 答題 → 集章</b><br/>
-        你完成 3 枚章，就會看到「完成徽章」畫面（用來做行銷導流/到店兌換）。
+      <div class="row">
+        <div>
+          <div class="pill">🚌 台灣好行金門 A線｜水頭翟山線（集章任務）</div>
+          <h1>把「搭公車」變成一場闖關旅行</h1>
+          <div class="sub">
+            玩法：到站掃 QR（或輸入站碼）→ 看故事 → 答題集章 → 解鎖 A線徽章 & 兌換碼。<br>
+            站點資料依官方 A線逐站停靠（含：金城車站、莒光樓、水頭聚落、明遺古街、文台寶塔、翟山坑道等）。</div>
+          </div>
+        <button class="btn secondary" id="resetBtn" title="清空本機進度">重置進度</button>
       </div>
     </div>
 
     <div class="card">
-      <div class="row" style="justify-content:space-between">
+      <div class="row">
         <div>
-          <div class="pill">📍 目前路線：A線</div>
-          <div class="sub">水頭—翟山（示意版）：把「搭公車」變成闖關旅行。</div>
+          <div class="pill" id="routePill">📍 目前路線：A線</div>
+          <div class="sub">任務建議：先主打「重點景點章」，再慢慢加站點與合作店兌換。</div>
         </div>
-        <button class="btn secondary" id="resetBtn">重置進度</button>
+        <div class="pill" id="progressPill">進度：0/6</div>
       </div>
-
-      <div style="margin-top:12px">
-        <div class="row" style="justify-content:space-between">
-          <div class="tiny">集章進度</div>
-          <div class="tiny" id="progressText">0/3</div>
-        </div>
+      <div style="margin-top:10px">
         <div class="progress"><div class="bar" id="bar"></div></div>
+        <div class="tiny muted" style="margin-top:8px" id="progressHint"></div>
       </div>
+    </div>
 
-      <div class="grid2" style="margin-top:12px">
-        <div class="card" style="margin:0">
-          <h3 style="margin:0 0 8px;font-size:14px">① 輸入站點碼（模擬掃 QR）</h3>
-          <input id="codeInput" placeholder="例如 A-01、A-02、A-03" />
-          <div class="row" style="margin-top:10px">
-            <button class="btn" id="redeemBtn">開始任務</button>
-            <button class="btn secondary" id="demoBtn">我想試玩（自動給碼）</button>
+    <div class="grid2">
+      <div class="card" style="margin:0">
+        <h2>① 掃 QR / 輸入站碼</h2>
+        <div class="tiny muted" style="margin-top:8px">
+          範例：A06（莒光樓）／A07（水頭聚落）／A10（翟山坑道）
+        </div>
+        <div style="margin-top:10px">
+          <input id="codeInput" placeholder="輸入站碼，例如 A06" />
+          <div class="row" style="margin-top:10px;justify-content:flex-start">
+            <button class="btn" id="goBtn">前往該站任務</button>
+            <button class="btn secondary" id="nextBtn">試玩：帶我到下一站</button>
           </div>
-          <div class="tiny" style="margin-top:10px">
-            之後你只要做 QR code 指向：<span style="opacity:.9">.../index.html?code=A-01</span>，掃描就會自動帶入。
+          <div class="tiny muted" style="margin-top:10px">
+            QR 建議連結：<span class="muted">.../index.html?stop=A10</span>（掃描自動跳到該站任務）
           </div>
         </div>
-
-        <div class="card" style="margin:0">
-          <h3 style="margin:0 0 8px;font-size:14px">② 任務（答對才給章）</h3>
-          <div id="missionBox" class="tiny" style="opacity:.8">請先輸入站點碼。</div>
-          <div id="missionActions" class="row" style="margin-top:10px;display:none"></div>
-        </div>
       </div>
 
-      <div class="card" style="margin-top:12px">
-        <h3 style="margin:0 0 10px;font-size:14px">你的 A線數位章</h3>
-        <div class="grid2" id="stamps"></div>
-        <div class="tiny" style="margin-top:10px">
-          ✅ 現在先做 3 站示範：A-01 / A-02 / A-03（你之後給我 A 線真實站點，我再幫你換成正式版）
+      <div class="card" style="margin:0">
+        <h2>② 站點故事 & 任務</h2>
+        <div id="missionBox" class="tiny muted" style="margin-top:10px">
+          先輸入站碼（如 A10）或按「試玩」。
         </div>
+        <div id="missionActions" class="row" style="margin-top:10px;justify-content:flex-start;display:none"></div>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>③ A線重點景點章（行銷主打）</h2>
+      <div class="sub">
+        我先挑 6 個「最適合做行銷故事＋到店兌換導流」的重點章（之後你要擴到完整逐站都行）。
+      </div>
+      <div class="grid3" id="stopsGrid" style="margin-top:12px"></div>
+      <div class="tiny muted" style="margin-top:10px">
+        站點名稱依 A線官方逐站停靠（例如：金城車站、莒光樓、水頭聚落、明遺古街、文台寶塔、翟山坑道等）。</div>
     </div>
 
     <div class="card" id="finish" style="display:none">
       <div class="pill">🎉 完成 A線徽章</div>
-      <h2 style="margin:8px 0 6px;font-size:18px">你解鎖了「A線好行徽章」！</h2>
+      <h2 style="margin-top:8px">你解鎖了「A線好行徽章」！</h2>
       <div class="sub" id="rewardText"></div>
-      <div class="row" style="margin-top:12px">
+      <div class="row" style="margin-top:12px;justify-content:flex-start">
         <button class="btn good" id="shareBtn">一鍵分享</button>
+        <button class="btn secondary" id="couponBtn">顯示兌換碼</button>
       </div>
       <div class="tiny" style="margin-top:10px" id="couponHint"></div>
+      <div class="tiny muted" style="margin-top:10px">
+        正式版建議：兌換碼改成「後端簽章/限次核銷」，避免截圖濫用。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tiny">
+        ✅ 現地佈署建議：把 QR 放在「車上座椅背、站牌、旅服中心、合作店家」。完成徽章可到合作店出示畫面換小禮/折扣。<br>
+        ✅ 下一版我可以幫你加：排行榜、抽獎碼核銷、導購（半日/一日/二日券）、多語系（中/英/日）。台灣好行金門也有套票/票券資訊頁可做導購入口。</div>
     </div>
   </div>
 
 <script>
-const key="km_a_line_game_v1";
-const state=JSON.parse(localStorage.getItem(key)||"{}");
+/** ===== A線站點資料（重點章） =====
+ * 站名依台灣好行 A線逐站停靠頁面顯示（例如：金城車站、莒光樓、水頭聚落、明遺古街、文台寶塔、翟山坑道等）。
+ * 來源：台灣好行金門 A線時刻表/公車動態。 */
+const ROUTE_SOURCE_NOTE = "A線逐站停靠：金城車站、金城衛生所、西門里公所、體育館、莒光樓、空中大學、水頭聚落、明遺古街、文台寶塔、翟山坑道、珠山、回金城車站。";
 
-const STAMPS=["A-01","A-02","A-03"];
-const QUESTIONS=[
-  {q:"台灣好行A線行銷遊戲最希望旅客做什麼？", a:["只看不動","搭車到站互動集章","直接回飯店"], correct:1},
-  {q:"掃描站點QR最適合用來？", a:["增加排隊","引導到景點/店家並完成任務","讓旅客迷路"], correct:1},
-  {q:"完成集章後最適合做什麼？", a:["分享打卡導流","立刻刪除","什麼都不做"], correct:0},
+const A_STOPS = [
+  { id:"A01", name:"金城車站", tags:["起點","交通樞紐"], story:"從金城出發，半天把西半部精華收進回憶裡。今天你不是趕行程，是在『集章闖關』。", q:[
+    {t:"為什麼用公車集章很適合做行銷？", a:["因為更麻煩","因為能引導到站互動與導流","因為比較慢"], c:1},
+  ]},
+  { id:"A06", name:"莒光樓", tags:["地標","遠眺金廈"], story:"莒光樓是金門的代表性地標之一，站上去視野打開：把『看見』變成『想分享』。", q:[
+    {t:"到地標點最適合做哪種任務？", a:["看完就走","拍照＋一句話分享","什麼都不做"], c:1},
+  ]},
+  { id:"A07", name:"水頭聚落", tags:["聚落","洋樓"], story:"水頭聚落的洋樓與聚落氛圍，是『走進歷史』最直覺的入口：慢一點，你會看見細節。", q:[
+    {t:"聚落型景點最適合的玩法是？", a:["衝刺式打卡","慢走觀察＋解鎖故事","只在門口拍照"], c:1},
+  ]},
+  { id:"A08", name:"明遺古街", tags:["老街","懷舊"], story:"老街的好，不在於『買到什麼』，而在於『你怎麼走』。把走路變成解謎，體驗感會瞬間拉滿。", q:[
+    {t:"老街關卡最適合結合什麼？", a:["尋寶線索","增加等待","禁止拍照"], c:0},
+  ]},
+  { id:"A09", name:"文台寶塔", tags:["風景點","打卡"], story:"文台寶塔常被當作風景停留點。行銷上，這種點最適合：一句標語＋一張照片＝一則分享。", q:[
+    {t:"行銷分享的『最小單位』通常是？", a:["長篇報告","一句話＋一張照片","完全不說"], c:1},
+  ]},
+  { id:"A10", name:"翟山坑道", tags:["軍事地景","夏季清涼"], story:"翟山坑道是金門軍事地景的經典代表，坑道內部體感清涼、氛圍強。把『到此一遊』升級成『完成任務』，更容易留下記憶。", q:[
+    {t:"坑道類景點最能強化哪種體驗？", a:["沉浸感","無聊感","看不到"], c:0},
+  ]},
 ];
 
-function save(){localStorage.setItem(key,JSON.stringify(state));}
-function $(s){return document.querySelector(s);}
+// 集滿幾枚章算完成（行銷 MVP）
+const NEED = A_STOPS.length;
+
+// 儲存 key（不同版本可改 v2/v3）
+const KEY = "km_tour_A_marketing_v1";
+const state = JSON.parse(localStorage.getItem(KEY) || "{}");
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function $(s){ return document.querySelector(s); }
+
+function normStop(s){
+  return (s||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
 
 function render(){
   state.stamps ||= [];
-  const got=state.stamps.length;
-  $("#progressText").textContent=`${got}/${STAMPS.length}`;
-  $("#bar").style.width=`${Math.min(100,(got/STAMPS.length)*100)}%`;
+  const got = state.stamps.length;
 
-  const stampsEl=$("#stamps");
-  stampsEl.innerHTML="";
-  STAMPS.forEach(code=>{
-    const done=state.stamps.includes(code);
-    const d=document.createElement("div");
-    d.className="stamp"+(done?" done":"");
-    d.innerHTML=`<div style="font-weight:900">${done?"✅ 已集章":"⬜ 未集章"}</div>
-                 <div class="tiny" style="opacity:.8">站點碼：${code}</div>`;
-    stampsEl.appendChild(d);
+  $("#progressPill").textContent = `進度：${got}/${NEED}`;
+  $("#bar").style.width = `${Math.min(100, (got/NEED)*100)}%`;
+  $("#progressHint").textContent = `提示：${ROUTE_SOURCE_NOTE}`;
+
+  // stops grid
+  const grid = $("#stopsGrid");
+  grid.innerHTML = "";
+  A_STOPS.forEach(st=>{
+    const done = state.stamps.includes(st.id);
+    const div = document.createElement("div");
+    div.className = "stop" + (done ? " done" : "");
+    div.innerHTML = `
+      <div style="font-weight:900;font-size:14px">${done ? "✅ " : "⬜ "}${st.name}</div>
+      <div class="tiny muted">站碼：${st.id}</div>
+      <div style="margin-top:6px">${st.tags.map(x=>`<span class="tag">${x}</span>`).join("")}</div>
+      <div class="tiny" style="margin-top:8px;opacity:.9">${st.story}</div>
+      <div class="row" style="margin-top:10px;justify-content:flex-start">
+        <button class="btn secondary" data-stop="${st.id}">前往任務</button>
+        <button class="btn secondary" data-link="${encodeURIComponent(st.name + " 金門")}">地圖搜尋</button>
+      </div>
+    `;
+    grid.appendChild(div);
   });
 
-  if(got>=STAMPS.length){
-    $("#finish").style.display="";
-    const device=(state.deviceId ||= Math.random().toString(16).slice(2,10)).toUpperCase();
-    const coupon=`KM-A-${device}`;
-    $("#rewardText").textContent="可引導玩家到合作店家出示此畫面換小禮/折扣（正式版可做核銷）。";
-    $("#couponHint").textContent=`示範兌換碼：${coupon}`;
-    save();
+  // bind buttons inside grid
+  grid.querySelectorAll("button[data-stop]").forEach(b=>{
+    b.onclick = ()=>gotoStop(b.getAttribute("data-stop"));
+  });
+  grid.querySelectorAll("button[data-link]").forEach(b=>{
+    b.onclick = ()=>{
+      const q = decodeURIComponent(b.getAttribute("data-link"));
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, "_blank");
+    };
+  });
+
+  if(got >= NEED){
+    $("#finish").style.display = "";
+    $("#rewardText").textContent = "你完成了 A線重點集章！建議把此畫面作為『到店兌換』入口（小禮/折扣/抽獎）。";
   }else{
-    $("#finish").style.display="none";
+    $("#finish").style.display = "none";
   }
 }
 
-function showMission(code){
-  const t=(code||"").trim().toUpperCase();
-  const box=$("#missionBox");
-  const act=$("#missionActions");
-  act.style.display="none";
+function gotoStop(stopId){
+  const st = A_STOPS.find(x=>x.id===stopId);
+  const box = $("#missionBox");
+  const act = $("#missionActions");
+  act.style.display = "none";
 
-  if(!/^A-\d{2}$/.test(t)){
-    box.style.opacity=.85;
-    box.textContent="碼格式不正確，請輸入 A-01、A-02、A-03。";
-    return;
-  }
-  if(!STAMPS.includes(t)){
-    box.style.opacity=.85;
-    box.textContent="目前試玩版只開放 A-01~A-03。";
-    return;
-  }
-  if(state.stamps.includes(t)){
-    box.style.opacity=.85;
-    box.textContent=`${t} 已經拿過章了！換下一站～`;
+  if(!st){
+    box.className = "tiny muted";
+    box.textContent = "找不到該站。請輸入如 A10 的站碼。";
     return;
   }
 
-  const q=QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
-  box.style.opacity=1;
-  box.innerHTML=`<div style="font-weight:900;margin-bottom:8px">任務：答對才給章（${t}）</div>
-                 <div style="margin-bottom:10px">${q.q}</div>`;
-  act.innerHTML="";
-  q.a.forEach((opt,idx)=>{
-    const b=document.createElement("button");
-    b.className="btn secondary";
-    b.textContent=`${idx+1}. ${opt}`;
-    b.onclick=()=>{
-      if(idx===q.correct){
-        state.stamps.push(t); save();
-        box.innerHTML=`✅ 恭喜答對！你獲得數位章：<b>${t}</b>`;
-        act.style.display="none";
+  const already = (state.stamps||[]).includes(st.id);
+  if(already){
+    box.className = "tiny muted";
+    box.innerHTML = `你已經拿過 <b>${st.name}</b> 的章（${st.id}）了！換下一站吧～`;
+    return;
+  }
+
+  // pick a question for this stop
+  const q = st.q[Math.floor(Math.random()*st.q.length)];
+  box.className = "tiny";
+  box.innerHTML = `
+    <div class="pill">📍 ${st.name}（${st.id}）</div>
+    <div style="margin-top:10px;opacity:.92">${st.story}</div>
+    <div style="margin-top:10px;font-weight:900">任務：答對才可集章</div>
+    <div style="margin-top:8px">${q.t}</div>
+  `;
+
+  act.innerHTML = "";
+  q.a.forEach((opt, idx)=>{
+    const b = document.createElement("button");
+    b.className = "btn secondary";
+    b.textContent = `${idx+1}. ${opt}`;
+    b.onclick = ()=>{
+      if(idx === q.c){
+        state.stamps ||= [];
+        state.stamps.push(st.id);
+        save();
+        box.innerHTML = `✅ 恭喜！你獲得「${st.name}」章（<b>${st.id}</b>）。<div class="tiny muted" style="margin-top:6px">可按右上方進度查看完成狀態，或去下一站。</div>`;
+        act.style.display = "none";
         render();
       }else{
-        box.innerHTML="再試一次～提示：答案跟「互動集章/導流」有關。";
+        box.innerHTML = `再試一次～提示：答案跟『互動導流/沉浸/分享』有關。`;
       }
     };
     act.appendChild(b);
   });
-  act.style.display="flex";
+  act.style.display = "flex";
+
+  // also sync input
+  $("#codeInput").value = st.id;
 }
 
-$("#redeemBtn").onclick=()=>showMission($("#codeInput").value);
-$("#demoBtn").onclick=()=>{
+function nextUncollected(){
   state.stamps ||= [];
-  const next=STAMPS.find(x=>!state.stamps.includes(x)) || STAMPS[0];
-  $("#codeInput").value=next;
-  showMission(next);
-};
-$("#resetBtn").onclick=()=>{localStorage.removeItem(key); location.href=location.pathname;};
+  return A_STOPS.find(x=>!state.stamps.includes(x.id))?.id || A_STOPS[0].id;
+}
 
-$("#shareBtn").onclick=async ()=>{
-  const text="我剛完成台灣好行金門 A線 集章任務！🚌✨ #台灣好行 #金門";
+function showCoupon(){
+  const device = (state.deviceId ||= Math.random().toString(16).slice(2,10)).toUpperCase();
+  save();
+  const coupon = `KM-A-${device}`;
+  $("#couponHint").textContent = `示範兌換碼：${coupon}（正式版建議後端核銷）`;
+}
+
+$("#goBtn").onclick = ()=>gotoStop(normStop($("#codeInput").value));
+$("#nextBtn").onclick = ()=>gotoStop(nextUncollected());
+$("#resetBtn").onclick = ()=>{ localStorage.removeItem(KEY); location.href = location.pathname + "?v=" + Date.now(); };
+
+$("#shareBtn").onclick = async ()=>{
+  const text = "我剛完成台灣好行金門 A線『水頭翟山集章任務』🚌✨ #台灣好行 #金門 #A線";
   try{
-    if(navigator.share){ await navigator.share({title:"台灣好行金門 A線", text}); }
-    else{ await navigator.clipboard.writeText(text); alert("已複製分享文案到剪貼簿！"); }
+    if(navigator.share) await navigator.share({title:"台灣好行金門 A線", text});
+    else { await navigator.clipboard.writeText(text); alert("已複製分享文案到剪貼簿！"); }
   }catch(e){ alert("分享取消或不可用。"); }
 };
+$("#couponBtn").onclick = showCoupon;
 
-// 支援 ?code=A-01
+// boot: support ?stop=A10
 (function boot(){
-  const url=new URL(location.href);
-  const code=url.searchParams.get("code");
-  if(code){ $("#codeInput").value=code.toUpperCase().trim(); showMission(code); }
   render();
+  const url = new URL(location.href);
+  const stop = url.searchParams.get("stop");
+  if(stop){
+    gotoStop(normStop(stop));
+  }
 })();
 </script>
 </body>
